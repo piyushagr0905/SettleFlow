@@ -2,6 +2,8 @@
 
 > A premium, high-performance multi-user expense sharing platform powered by a greedy debt-simplification engine.
 
+**🌐 Live Demo: [https://settleflow-production-48e0.up.railway.app](https://settleflow-production-48e0.up.railway.app)**
+
 [![GitHub license](https://img.shields.io/github/license/piyushagr0905/SettleFlow?style=for-the-badge&color=green)](https://github.com/piyushagr0905/SettleFlow/blob/main/LICENSE)
 [![Prisma Database](https://img.shields.io/badge/Prisma-6.2.0-blue?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
