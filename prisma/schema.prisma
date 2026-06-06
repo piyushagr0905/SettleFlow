@@ -1,0 +1,113 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  ini          String
+  col          String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  memberOf     GroupMember[]
+  expensesPaid Expense[]
+  splits       ExpenseSplit[]
+  settleSent   Settlement[]  @relation("SentSettlements")
+  settleRecv   Settlement[]  @relation("ReceivedSettlements")
+  notifications Notification[]
+}
+
+model Group {
+  id        String        @id @default(uuid())
+  name      String
+  emoji     String
+  cat       String
+  budget    Int?
+  created   String
+  createdAt DateTime      @default(now())
+  
+  members   GroupMember[]
+  expenses  Expense[]
+  budgets   Budget[]
+}
+
+model GroupMember {
+  groupId String
+  userId  String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+}
+
+model Expense {
+  id        String         @id @default(uuid())
+  gid       String?
+  title     String
+  amount    Float
+  paidById  String
+  type      String         // "equal", "percentage", "exact", "shares"
+  cat       String
+  date      String
+  note      String?
+  tags      String?
+  createdAt DateTime       @default(now())
+  
+  group     Group?         @relation(fields: [gid], references: [id], onDelete: SetNull)
+  paidBy    User           @relation(fields: [paidById], references: [id])
+  splits    ExpenseSplit[]
+}
+
+model ExpenseSplit {
+  expenseId   String
+  userId      String
+  shareAmount Float
+  inputValue  Float
+  expense     Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id])
+
+  @@id([expenseId, userId])
+}
+
+model Settlement {
+  id         String   @id @default(uuid())
+  fromUserId String
+  toUserId   String
+  amount     Float
+  date       String
+  method     String
+  status     String
+  createdAt  DateTime @default(now())
+
+  from       User     @relation("SentSettlements", fields: [fromUserId], references: [id])
+  to         User     @relation("ReceivedSettlements", fields: [toUserId], references: [id])
+}
+
+model Budget {
+  id          String @id @default(uuid())
+  groupId     String @unique
+  limitAmount Int
+  threshold   String @default("80%")
+  group       Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  body      String
+  time      String
+  read      Boolean  @default(false)
+  type      String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
